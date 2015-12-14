@@ -1,0 +1,41 @@
+{
+  "name": "grunt-clientlibify",
+  "description": "Integrate AEM with a styleguide",
+  "version": "0.1.0",
+  "homepage": "https://github.com/mickleroy/grunt-clientlibify",
+  "author": {
+    "name": "Michael Leroy",
+    "email": "mickjleroy@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mickleroy/grunt-clientlibify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mickleroy/grunt-clientlibify/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/mickleroy/grunt-clientlibify/blob/master/LICENSE"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "^0.9.2",
+    "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-nodeunit": "^0.3.3",
+    "grunt": "~0.4.5"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.5"
+  },
+  "keywords": [
+    "gruntplugin"
+  ]
+}
