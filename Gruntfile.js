@@ -32,20 +32,18 @@ module.exports = function(grunt) {
     clientlibify: {
       default_options: {
         options: {
-        },
-        files: {
-          'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123']
+            cssDir: 'test/fixtures/css',
+            jsDir: 'test/fixtures/js'
         }
       },
-      custom_options: {
+      /**custom_options: {
         options: {
-          separator: ': ',
-          punctuation: ' !!!'
+          deploy: true
         },
         files: {
           'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123']
         }
-      }
+      }*/
     },
 
     // Unit tests.
