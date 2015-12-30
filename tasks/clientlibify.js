@@ -16,6 +16,7 @@ var path = require('path');
 var chalk = require('chalk');
 var archiver = require('archiver');
 var request = require('request');
+var uri = require('urijs');
 
 module.exports = function (grunt) {
 
@@ -43,6 +44,7 @@ module.exports = function (grunt) {
         description: 'CRX package installed from grunt-clientlibify plugin'
       },
       deploy: {
+        scheme: 'http',
         host: 'localhost',
         port: '4502',
         username: 'admin',
@@ -129,15 +131,22 @@ module.exports = function (grunt) {
           'install': 'true',
         };
 
+        var postUri = uri()
+          .scheme(options.deploy.scheme)
+          .host(options.deploy.host)
+          .port(options.deploy.port)
+          .path('/crx/packmgr/service.jsp');
+
         request.post({
-          url: 'http://localhost:4502/crx/packmgr/service.jsp',
+          url: postUri.toString(),
           formData: formData,
           headers: {
             'Authorization': 'Basic ' +
                 new Buffer(options.deploy.username + ':' +
                           options.deploy.password).toString('base64')
           }
-        }, function (err, httpResponse, body) {
+        },
+        function (err, httpResponse, body) {
           if (httpResponse.statusCode !== 200) {
             grunt.log.error('Upload failed: ', httpResponse.statusCode + ' - ' + httpResponse.statusMessage);
             done(false);
