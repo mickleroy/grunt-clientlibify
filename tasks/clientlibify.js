@@ -14,6 +14,8 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
+var chalk = require('chalk');
 var archiver = require('archiver');
 
 module.exports = function (grunt) {
@@ -26,7 +28,6 @@ module.exports = function (grunt) {
     jcrRootContent:   'tasks/templates/jcrRootContent.xml',
     propertiesXml:    'tasks/templates/properties.xml'
   }
-  //var clientlibPathInPackage = '<%= category %>-<%= version %>/jcr_root/etc/designs/';
 
   grunt.registerMultiTask('clientlibify', 'Integrate AEM with a styleguide', function () {
 
@@ -39,7 +40,7 @@ module.exports = function (grunt) {
         name: 'clientlibify',
         version: '1.0',
         group: 'my_packages',
-        description: 'Clientlib package installed from grunt-clientlibify plugin'
+        description: 'CRX package installed from grunt-clientlibify plugin'
       },
 
     });
@@ -55,21 +56,23 @@ module.exports = function (grunt) {
       return false;
     }
 
-    // create design folder
-    var clientlibRootDir        = options.dest + '/jcr_root/etc/designs/' + options.category;
-    var clientlibFolderLocation = clientlibRootDir + '/clientlibs';
-    var metaInfDirLocation      = options.dest + '/META-INF/vault';
+    var jcrRootPath = path.join(options.dest, '/jcr_root');
+    var metaInfPath = path.join(options.dest, '/META-INF');
+
+    var clientlibRootDir        = path.join(jcrRootPath, '/etc/designs/', options.category);
+    var clientlibFolderLocation = path.join(clientlibRootDir, '/clientlibs');
+    var vaultPath      = path.join(metaInfPath, '/vault');
 
     grunt.file.mkdir(clientlibRootDir);
 
     // create .content.xml for `/jcr_root/` folder
-    grunt.file.copy(templates.jcrRootContent, options.dest + '/jcr_root/' + '/.content.xml');
+    grunt.file.copy(templates.jcrRootContent, path.join(jcrRootPath, '/.content.xml'));
 
     // create .content.xml for `/jcr_root/etc/` folder
-    grunt.file.copy(templates.folderContent, options.dest + '/jcr_root/etc' + '/.content.xml');
+    grunt.file.copy(templates.folderContent, path.join(jcrRootPath, '/etc/.content.xml'));
 
     // create .content.xml for `/jcr_root/etc/designs` folder
-    grunt.file.copy(templates.folderContent, options.dest + '/jcr_root/etc/designs' + '/.content.xml');
+    grunt.file.copy(templates.folderContent, path.join(jcrRootPath, '/etc/designs/.content.xml'));
 
     // create .content.xml for `/jcr_root/etc/designs/<category>/` folder
     var designFileContents = grunt.template.process(grunt.file.read(templates.designContent), {data: options});
@@ -90,53 +93,117 @@ module.exports = function (grunt) {
     }
 
     // create META-INF folder
-    grunt.file.mkdir(metaInfDirLocation);
+    grunt.file.mkdir(vaultPath);
 
     // create `META-INF/vault/filter.xml` file
     var filterFileContents = grunt.template.process(grunt.file.read(templates.filterXml), {data: options});
-    grunt.file.write(metaInfDirLocation + '/filter.xml', filterFileContents);
+    grunt.file.write(path.join(vaultPath, '/filter.xml'), filterFileContents);
 
     // create `META-INF/vault/properties.xml` file
     var propsFileContents = grunt.template.process(grunt.file.read(templates.propertiesXml), {data: options});
-    grunt.file.write(metaInfDirLocation + '/properties.xml', propsFileContents);
+    grunt.file.write(path.join(vaultPath, '/properties.xml'), propsFileContents);
 
     // zip up the clientlib
-    zipDirectory(options.dest, options.dest,
-                options.category + '-' + options.package.version + '.zip');
+    var directoriesToZip = [
+      {src: jcrRootPath, dest: '/jcr_root'},
+      {src: metaInfPath, dest: '/META-INF'}
+    ];
+    var zipFileLocation = path.join(options.dest, options.category + '-' + options.package.version + '.zip');
 
-    // clean up after ourselves
-    //cleanup();
+    zipDirectory(directoriesToZip, zipFileLocation, this.async(), function() {
+      // clean up after ourselves
+      cleanup();
+    });
+
 
     /*****************************
      *    UTILITY FUNCTIONS      *
      *****************************/
 
     function generateClientLibrarySection(name, pathToSrcDirectory, fileExtensions) {
-      grunt.file.mkdir(clientlibFolderLocation + '/' + name);
+      grunt.file.mkdir(path.join(clientlibFolderLocation, name));
 
       // write .txt file
       var files = grunt.file.expand({filter: 'isFile', cwd: pathToSrcDirectory}, fileExtensions);
-      grunt.file.write(clientlibFolderLocation + '/' + name + '.txt',
+      grunt.file.write(path.join(clientlibFolderLocation, name + '.txt'),
                       "#base=".concat(name).concat('\n')
                       .concat(files.join('\n')));
 
       // copy files over to client library
       grunt.file.recurse(pathToSrcDirectory, function (abspath, rootdir, subdir, filename) {
-        grunt.file.copy(abspath, clientlibFolderLocation + '/' + name + '/' + filename);
+        grunt.file.copy(abspath, path.join(clientlibFolderLocation, name, filename));
       });
     }
 
-    function zipDirectory(pathToDirectory, destination, zipFileName) {
-      var writeStream = fs.createWriteStream(destination + '/' + zipFileName);
-      var archive = archiver('zip', {});
-      archive.pipe(writeStream);
-      archive.directory(pathToDirectory + '/jcr_root', destination);
-      archive.directory(pathToDirectory + '/META-INF', destination);
+    function zipDirectory(files, dest, done, callback) {
+      var archive = archiver.create('zip', {gzip: false});
+
+      // ensure dest folder exists
+      grunt.file.mkdir(path.dirname(dest));
+
+      // Where to write the file
+      var destStream = fs.createWriteStream(dest);
+
+      archive.on('error', function(err) {
+        grunt.log.error(err);
+        grunt.fail.warn('Archiving failed.');
+      });
+
+      archive.on('entry', function(file) {
+        grunt.verbose.writeln('Archived ' + file.name);
+      });
+
+      destStream.on('error', function(err) {
+        grunt.log.error(err);
+        grunt.fail.warn('WriteStream failed.');
+      });
+
+      destStream.on('close', function() {
+        var size = archive.pointer();
+        grunt.log.ok('Created ' + chalk.cyan(dest) + ' (' + size + ' bytes)');
+
+        // FIXME: can async() callback be leveraged?
+        callback();
+
+        done();
+      });
+
+      archive.pipe(destStream);
+
+      files.forEach(function(file) {
+          var fstat = fileStatSync(file.src);
+
+          if(!fstat) {
+            grunt.fail.warn('unable to stat srcFile (' + file.src + ')');
+            return;
+          }
+
+        if (fstat.isDirectory()) {
+          grunt.verbose.writeln('Directory found:' + file.src);
+          archive.directory(file.src, file.dest);
+        } else {
+          grunt.fail.warn(file.src + ' is not a valid directory');
+          return;
+        }
+      });
+
       archive.finalize();
+      grunt.log.ok('Compressed files');
+    }
+
+    function fileStatSync() {
+      var filepath = path.join.apply(path, arguments);
+
+      if (grunt.file.exists(filepath)) {
+        return fs.statSync(filepath);
+      }
+
+      return false;
     }
 
     function cleanup() {
-      grunt.file.delete(clientlibRootDir);
+      grunt.file.delete(jcrRootPath);
+      grunt.file.delete(metaInfPath);
     }
   });
 };
