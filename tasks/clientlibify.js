@@ -6,6 +6,11 @@
  * Licensed under the MIT license.
  */
 
+// TODO: install package via:
+// POST admin:admin -F package=@<package.zip> http://localhost:4502/crx/packmgr/service.json?cmd=upload
+// Content-Type: multipart/form-data
+// TODO: work on supporting other folders outside css and js
+
 'use strict';
 
 var fs = require('fs');
@@ -13,9 +18,15 @@ var archiver = require('archiver');
 
 module.exports = function (grunt) {
 
-  var DESIGN_CONTENT_TEMPLATE     = 'tasks/templates/designContent.xml';
-  var CLIENTLIB_CONTENT_TEMPLATE  = 'tasks/templates/clientlibContent.xml';
-
+  var templates = {
+    designContent:    'tasks/templates/designContent.xml',
+    clientlibContent: 'tasks/templates/clientlibContent.xml',
+    filterXml:        'tasks/templates/filter.xml',
+    folderContent:    'tasks/templates/folderContent.xml',
+    jcrRootContent:   'tasks/templates/jcrRootContent.xml',
+    propertiesXml:    'tasks/templates/properties.xml'
+  }
+  //var clientlibPathInPackage = '<%= category %>-<%= version %>/jcr_root/etc/designs/';
 
   grunt.registerMultiTask('clientlibify', 'Integrate AEM with a styleguide', function () {
 
@@ -23,7 +34,14 @@ module.exports = function (grunt) {
       dest: 'tmp',
       category: 'etc-clientlibify',
       embed: [],
-      dependencies: ['jquery', 'handlebars']
+      dependencies: [],
+      package: {
+        name: 'clientlibify',
+        version: '1.0',
+        group: 'my_packages',
+        description: 'Clientlib package installed from grunt-clientlibify plugin'
+      },
+
     });
 
     // validate mandatory config
@@ -38,17 +56,27 @@ module.exports = function (grunt) {
     }
 
     // create design folder
-    var designFolderLocation    = options.dest + '/' + options.category;
-    var clientlibFolderLocation = designFolderLocation + '/clientlibs';
+    var clientlibRootDir        = options.dest + '/jcr_root/etc/designs/' + options.category;
+    var clientlibFolderLocation = clientlibRootDir + '/clientlibs';
+    var metaInfDirLocation      = options.dest + '/META-INF/vault';
 
-    grunt.file.mkdir(designFolderLocation);
+    grunt.file.mkdir(clientlibRootDir);
 
-    // create .content.xml for design folder
-    var designFileContents = grunt.template.process(grunt.file.read(DESIGN_CONTENT_TEMPLATE), {data: options});
-    grunt.file.write(designFolderLocation + '/.content.xml', designFileContents);
+    // create .content.xml for `/jcr_root/` folder
+    grunt.file.copy(templates.jcrRootContent, options.dest + '/jcr_root/' + '/.content.xml');
 
-    // create .content.xml for clientlib folder
-    var clientLibFileContents = grunt.template.process(grunt.file.read(CLIENTLIB_CONTENT_TEMPLATE), {data: options});
+    // create .content.xml for `/jcr_root/etc/` folder
+    grunt.file.copy(templates.folderContent, options.dest + '/jcr_root/etc' + '/.content.xml');
+
+    // create .content.xml for `/jcr_root/etc/designs` folder
+    grunt.file.copy(templates.folderContent, options.dest + '/jcr_root/etc/designs' + '/.content.xml');
+
+    // create .content.xml for `/jcr_root/etc/designs/<category>/` folder
+    var designFileContents = grunt.template.process(grunt.file.read(templates.designContent), {data: options});
+    grunt.file.write(clientlibRootDir + '/.content.xml', designFileContents);
+
+    // create .content.xml for `/jcr_root/etc/designs/<category>/clientlibs` folder
+    var clientLibFileContents = grunt.template.process(grunt.file.read(templates.clientlibContent), {data: options});
     grunt.file.write(clientlibFolderLocation + '/.content.xml', clientLibFileContents);
 
     // create css directory
@@ -61,15 +89,27 @@ module.exports = function (grunt) {
       generateClientLibrarySection('js', options.jsDir, ['*.js']);
     }
 
+    // create META-INF folder
+    grunt.file.mkdir(metaInfDirLocation);
+
+    // create `META-INF/vault/filter.xml` file
+    var filterFileContents = grunt.template.process(grunt.file.read(templates.filterXml), {data: options});
+    grunt.file.write(metaInfDirLocation + '/filter.xml', filterFileContents);
+
+    // create `META-INF/vault/properties.xml` file
+    var propsFileContents = grunt.template.process(grunt.file.read(templates.propertiesXml), {data: options});
+    grunt.file.write(metaInfDirLocation + '/properties.xml', propsFileContents);
+
     // zip up the clientlib
-    var writeStream = fs.createWriteStream(options.dest + '/' + options.category + '.zip');
-    var archive = archiver('zip', {});
-    archive.pipe(writeStream);
-    archive.directory(clientlibFolderLocation, options.dest);
-    archive.finalize();
+    zipDirectory(options.dest, options.dest,
+                options.category + '-' + options.package.version + '.zip');
 
     // clean up after ourselves
-    cleanup();
+    //cleanup();
+
+    /*****************************
+     *    UTILITY FUNCTIONS      *
+     *****************************/
 
     function generateClientLibrarySection(name, pathToSrcDirectory, fileExtensions) {
       grunt.file.mkdir(clientlibFolderLocation + '/' + name);
@@ -86,8 +126,17 @@ module.exports = function (grunt) {
       });
     }
 
+    function zipDirectory(pathToDirectory, destination, zipFileName) {
+      var writeStream = fs.createWriteStream(destination + '/' + zipFileName);
+      var archive = archiver('zip', {});
+      archive.pipe(writeStream);
+      archive.directory(pathToDirectory + '/jcr_root', destination);
+      archive.directory(pathToDirectory + '/META-INF', destination);
+      archive.finalize();
+    }
+
     function cleanup() {
-      grunt.file.delete(designFolderLocation);
+      grunt.file.delete(clientlibRootDir);
     }
   });
 };

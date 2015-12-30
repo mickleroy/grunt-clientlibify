@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <comment>FileVault Package Properties</comment>
+    <entry key="createdBy">admin</entry>
+    <entry key="name"><%= package.name %></entry>
+    <entry key="lastModified"><%= grunt.template.today('isoDateTime') %></entry>
+    <entry key="lastModifiedBy">admin</entry>
+    <entry key="created"><%= grunt.template.today('isoDateTime') %></entry>
+    <entry key="buildCount">1</entry>
+    <entry key="version"><%= package.version %></entry>
+    <entry key="dependencies"/>
+    <entry key="packageFormatVersion">2</entry>
+    <entry key="group"><%= package.group %></entry>
+    <entry key="lastWrapped">2015-12-20T12:59:36.453+11:00</entry>
+    <entry key="description"><%= package.description %></entry>
+    <entry key="lastWrappedBy">admin</entry>
+</properties>
