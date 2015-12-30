@@ -6,9 +6,7 @@
  * Licensed under the MIT license.
  */
 
-// TODO: install package via:
-// POST admin:admin -F package=@<package.zip> http://localhost:4502/crx/packmgr/service.json?cmd=upload
-// Content-Type: multipart/form-data
+// TODO: refactor to externalise util functions into separate file in lib/
 // TODO: work on supporting other folders outside css and js
 
 'use strict';
@@ -17,6 +15,7 @@ var fs = require('fs');
 var path = require('path');
 var chalk = require('chalk');
 var archiver = require('archiver');
+var request = require('request');
 
 module.exports = function (grunt) {
 
@@ -33,6 +32,7 @@ module.exports = function (grunt) {
 
     var options = this.options({
       dest: 'tmp',
+      installPackage: true,
       category: 'etc-clientlibify',
       embed: [],
       dependencies: [],
@@ -42,7 +42,12 @@ module.exports = function (grunt) {
         group: 'my_packages',
         description: 'CRX package installed from grunt-clientlibify plugin'
       },
-
+      deploy: {
+        host: 'localhost',
+        port: '4502',
+        username: 'admin',
+        password: 'admin'
+      }
     });
 
     // validate mandatory config
@@ -110,11 +115,43 @@ module.exports = function (grunt) {
     ];
     var zipFileLocation = path.join(options.dest, options.category + '-' + options.package.version + '.zip');
 
-    zipDirectory(directoriesToZip, zipFileLocation, this.async(), function() {
+    var done = this.async();
+
+    zipDirectory(directoriesToZip, zipFileLocation, function() {
       // clean up after ourselves
       cleanup();
-    });
 
+      if(options.installPackage) {
+        // install the CRX package
+        var formData = {
+          'file': fs.createReadStream(zipFileLocation),
+          'force': 'true',
+          'install': 'true',
+        };
+
+        request.post({
+          url: 'http://localhost:4502/crx/packmgr/service.jsp',
+          formData: formData,
+          headers: {
+            'Authorization': 'Basic ' +
+                new Buffer(options.deploy.username + ':' +
+                          options.deploy.password).toString('base64')
+          }
+        }, function (err, httpResponse, body) {
+          if (httpResponse.statusCode !== 200) {
+            grunt.log.error('Upload failed: ', httpResponse.statusCode + ' - ' + httpResponse.statusMessage);
+            done(false);
+            return;
+          }
+          grunt.verbose.writeln(body);
+          grunt.log.ok('CRX package uploaded successfully!');
+
+          done();
+        });
+      } else {
+        done();
+      }
+    });
 
     /*****************************
      *    UTILITY FUNCTIONS      *
@@ -135,7 +172,7 @@ module.exports = function (grunt) {
       });
     }
 
-    function zipDirectory(files, dest, done, callback) {
+    function zipDirectory(files, dest, callback) {
       var archive = archiver.create('zip', {gzip: false});
 
       // ensure dest folder exists
@@ -162,10 +199,7 @@ module.exports = function (grunt) {
         var size = archive.pointer();
         grunt.log.ok('Created ' + chalk.cyan(dest) + ' (' + size + ' bytes)');
 
-        // FIXME: can async() callback be leveraged?
         callback();
-
-        done();
       });
 
       archive.pipe(destStream);
