@@ -33,7 +33,7 @@ module.exports = function (grunt) {
 
     var options = this.options({
       dest: 'tmp',
-      installPackage: true,
+      installPackage: false,
       category: 'etc-clientlibify',
       embed: [],
       dependencies: [],
