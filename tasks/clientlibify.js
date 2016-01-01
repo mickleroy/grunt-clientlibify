@@ -115,7 +115,7 @@ module.exports = function (grunt) {
       {src: jcrRootPath, dest: '/jcr_root'},
       {src: metaInfPath, dest: '/META-INF'}
     ];
-    var zipFileLocation = path.join(options.dest, options.category + '-' + options.package.version + '.zip');
+    var zipFileLocation = path.join(options.dest, options.package.name + '-' + options.package.version + '.zip');
 
     var done = this.async();
 
@@ -124,29 +124,7 @@ module.exports = function (grunt) {
       cleanup();
 
       if(options.installPackage) {
-        // install the CRX package
-        var formData = {
-          'file': fs.createReadStream(zipFileLocation),
-          'force': 'true',
-          'install': 'true',
-        };
-
-        var postUri = uri()
-          .scheme(options.deploy.scheme)
-          .host(options.deploy.host)
-          .port(options.deploy.port)
-          .path('/crx/packmgr/service.jsp');
-
-        request.post({
-          url: postUri.toString(),
-          formData: formData,
-          headers: {
-            'Authorization': 'Basic ' +
-                new Buffer(options.deploy.username + ':' +
-                          options.deploy.password).toString('base64')
-          }
-        },
-        function (err, httpResponse, body) {
+        installPackage(zipFileLocation, function(err, httpResponse, body) {
           if (httpResponse.statusCode !== 200) {
             grunt.log.error('Upload failed: ', httpResponse.statusCode + ' - ' + httpResponse.statusMessage);
             done(false);
@@ -166,6 +144,12 @@ module.exports = function (grunt) {
      *    UTILITY FUNCTIONS      *
      *****************************/
 
+    /**
+     * Generates a section of the client library (JS or CSS), creating a js.txt or css.txt.
+     * @param name
+     * @param pathToSrcDirectory
+     * @param fileExtensions
+     */
     function generateClientLibrarySection(name, pathToSrcDirectory, fileExtensions) {
       grunt.file.mkdir(path.join(clientlibFolderLocation, name));
 
@@ -181,7 +165,13 @@ module.exports = function (grunt) {
       });
     }
 
-    function zipDirectory(files, dest, callback) {
+    /**
+     * Zips a set of directories and its contents using node-archiver.
+     * @param directories
+     * @param dest
+     * @param callback
+     */
+    function zipDirectory(directories, dest, callback) {
       var archive = archiver.create('zip', {gzip: false});
 
       // ensure dest folder exists
@@ -213,19 +203,19 @@ module.exports = function (grunt) {
 
       archive.pipe(destStream);
 
-      files.forEach(function(file) {
-          var fstat = fileStatSync(file.src);
+      directories.forEach(function(directory) {
+          var fstat = fileStatSync(directory.src);
 
           if(!fstat) {
-            grunt.fail.warn('unable to stat srcFile (' + file.src + ')');
+            grunt.fail.warn('unable to stat srcFile (' + directory.src + ')');
             return;
           }
 
         if (fstat.isDirectory()) {
-          grunt.verbose.writeln('Directory found:' + file.src);
-          archive.directory(file.src, file.dest);
+          grunt.verbose.writeln('Directory found:' + directory.src);
+          archive.directory(directory.src, directory.dest);
         } else {
-          grunt.fail.warn(file.src + ' is not a valid directory');
+          grunt.fail.warn(directory.src + ' is not a valid directory');
           return;
         }
       });
@@ -234,6 +224,10 @@ module.exports = function (grunt) {
       grunt.log.ok('Compressed files');
     }
 
+    /**
+     * Retrieves stat info about a file/directory if it exists.
+     * @returns {boolean}
+     */
     function fileStatSync() {
       var filepath = path.join.apply(path, arguments);
 
@@ -244,9 +238,42 @@ module.exports = function (grunt) {
       return false;
     }
 
+    /**
+     * Performs any cleanup task after the task is run.
+     */
     function cleanup() {
       grunt.file.delete(jcrRootPath);
       grunt.file.delete(metaInfPath);
+    }
+
+    /**
+     * Installs a CRX package via an HTTP POST (basic authentication)
+     * to an AEM instance.
+     * @param zipFileLocation
+     * @param callback
+     */
+    function installPackage(zipFileLocation, callback) {
+      var formData = {
+        'file': fs.createReadStream(zipFileLocation),
+        'force': 'true',
+        'install': 'true',
+      };
+
+      var postUri = uri()
+        .scheme(options.deploy.scheme)
+        .host(options.deploy.host)
+        .port(options.deploy.port)
+        .path('/crx/packmgr/service.jsp');
+
+      request.post({
+          url: postUri.toString(),
+          formData: formData,
+          headers: {
+            'Authorization': 'Basic ' +
+                new Buffer(options.deploy.username + ':' +
+                  options.deploy.password).toString('base64')
+          }
+        }, callback);
     }
   });
 };
