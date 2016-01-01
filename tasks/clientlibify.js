@@ -6,8 +6,10 @@
  * Licensed under the MIT license.
  */
 
-// TODO: refactor to externalise util functions into separate file in lib/
+// TODO: test sub directories for css/js works
+// TODO: use system temp directory?
 // TODO: work on supporting other folders outside css and js
+// TODO: refactor to externalise util functions into separate file in lib/
 
 'use strict';
 
@@ -125,7 +127,11 @@ module.exports = function (grunt) {
 
       if(options.installPackage) {
         installPackage(zipFileLocation, function(err, httpResponse, body) {
-          if (httpResponse.statusCode !== 200) {
+          if(typeof httpResponse == 'undefined') {
+            grunt.log.error('Upload failed');
+            done(false);
+            return;
+          } else if (httpResponse.statusCode !== 200) {
             grunt.log.error('Upload failed: ', httpResponse.statusCode + ' - ' + httpResponse.statusMessage);
             done(false);
             return;
