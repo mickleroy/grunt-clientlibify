@@ -175,11 +175,11 @@ grunt.initConfig({
 
 #### Custom Options
 In this example, all options have been provided. As a result, a CRX package will be created inside
-`dist` with the name `prickly-pear-2.1.zip`. This package will contain all containing the `.css`
+`dist` with the name `prickly-pear-2.1.zip`. This package will contain all the `.css`
 and `.less` files under `assets/styles/css`, as well as the `.js` files under `assets/scripts`.
 The important thing here is that the `installPackage` option has been set to `true`. This means that
 once the CRX package is created, the task will install it on an AEM instance using the credentials
-provided in the `options.deploy`.
+provided in the `options.deploy*` configuration.
 
 ```js
 grunt.initConfig({
@@ -205,7 +205,6 @@ grunt.initConfig({
       deployPort: '4502',
       deployUsername: 'admin',
       deployPassword: 'admin'
-      }
     },
   }
 });
