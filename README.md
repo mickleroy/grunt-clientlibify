@@ -13,6 +13,8 @@ by leveraging javascript tooling to build (and optionally deploy) a CRX package 
 
 More info on Clientlibs on the [AEM Documentation](https://docs.adobe.com/docs/en/cq/5-6-1/developing/clientlibs.html).
 
+This plugin is listed on the NPM registry [here](https://www.npmjs.com/package/grunt-clientlibify).
+
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
 
