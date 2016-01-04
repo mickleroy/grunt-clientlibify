@@ -6,7 +6,8 @@
  * Licensed under the MIT license.
  */
 
-// TODO: work on supporting other folders outside css and js
+// TODO: work on supporting other files/folders outside css and js
+// TODO: standardize logging
 // TODO: refactor to externalise util functions into separate file in lib/
 
 'use strict';
@@ -54,6 +55,11 @@ module.exports = function (grunt) {
     });
 
     // validate mandatory config
+    if(!options.cssDir && !options.jsDir) {
+      grunt.log.error('cssDir and/or jsDir must be provided');
+      return false;
+    }
+
     if (options.cssDir && !grunt.file.isDir(options.cssDir)) {
       grunt.log.error(options.cssDir + ' is not a directory');
       return false;
