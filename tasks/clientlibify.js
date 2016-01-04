@@ -6,10 +6,6 @@
  * Licensed under the MIT license.
  */
 
-// TODO: work on supporting other files/folders outside css and js
-// TODO: standardize logging
-// TODO: refactor to externalise util functions into separate file in lib/
-
 'use strict';
 
 var fs       = require('fs');
@@ -143,6 +139,7 @@ module.exports = function (grunt) {
             done(false);
             return;
           }
+          grunt.verbose.writeln('Server responded with:');
           grunt.verbose.writeln(body);
           grunt.log.ok('CRX package uploaded successfully!');
 
@@ -236,7 +233,7 @@ module.exports = function (grunt) {
       });
 
       archive.finalize();
-      grunt.log.ok('Compressed files');
+      grunt.verbose.writeln('Compressed files');
     }
 
     /**
@@ -271,6 +268,8 @@ module.exports = function (grunt) {
         .host(options.deploy.host)
         .port(options.deploy.port)
         .path('/crx/packmgr/service.jsp');
+
+      grunt.verbose.writeln('Installing CRX package to ' + postUri.toString());
 
       request.post({
           url: postUri.toString(),

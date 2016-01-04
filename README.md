@@ -94,5 +94,9 @@ grunt.initConfig({
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
+## Roadmap
+- Supporting other files/folders outside of css and js. This would mean providing the ability
+for users to specify additional resources to be placed in the client library (i.e. icons, fonts, images).
+
 ## Release History
 _(Nothing yet)_
