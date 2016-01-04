@@ -28,6 +28,8 @@ exports.clientlibify = {
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/",
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/.content.xml",
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/css/",
+      "jcr_root/etc/designs/etc-clientlibify/clientlibs/css/buttons/",
+      "jcr_root/etc/designs/etc-clientlibify/clientlibs/css/buttons/buttons.css",
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/css/test.css",
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/css/test2.less",
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/css.txt",
@@ -53,7 +55,7 @@ exports.clientlibify = {
       test.deepEqual(actual, expected, 'zip file should unzip and contain all of the expected files');
 
       // delete generated file
-      grunt.file.delete(zipFile);
+      //grunt.file.delete(zipFile);
 
       test.done();
     });
@@ -76,6 +78,8 @@ exports.clientlibify = {
       "jcr_root/etc/designs/styleguide/clientlibs/",
       "jcr_root/etc/designs/styleguide/clientlibs/.content.xml",
       "jcr_root/etc/designs/styleguide/clientlibs/css/",
+      "jcr_root/etc/designs/styleguide/clientlibs/css/buttons/",
+      "jcr_root/etc/designs/styleguide/clientlibs/css/buttons/buttons.css",
       "jcr_root/etc/designs/styleguide/clientlibs/css/test.css",
       "jcr_root/etc/designs/styleguide/clientlibs/css/test2.less",
       "jcr_root/etc/designs/styleguide/clientlibs/css.txt",
@@ -101,7 +105,7 @@ exports.clientlibify = {
       test.deepEqual(actual, expected, 'zip file should unzip and contain all of the expected files');
 
       // delete generated file
-      grunt.file.delete(zipFile);
+      //grunt.file.delete(zipFile);
 
       test.done();
     });
@@ -124,6 +128,8 @@ exports.clientlibify = {
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/",
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/.content.xml",
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/css/",
+      "jcr_root/etc/designs/etc-clientlibify/clientlibs/css/buttons/",
+      "jcr_root/etc/designs/etc-clientlibify/clientlibs/css/buttons/buttons.css",
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/css/test.css",
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/css/test2.less",
       "jcr_root/etc/designs/etc-clientlibify/clientlibs/css.txt"
@@ -146,7 +152,7 @@ exports.clientlibify = {
       test.deepEqual(actual, expected, 'zip file should unzip and contain all of the expected files');
 
       // delete generated file
-      grunt.file.delete(zipFile);
+      //grunt.file.delete(zipFile);
 
       test.done();
     });
@@ -190,7 +196,7 @@ exports.clientlibify = {
       test.deepEqual(actual, expected, 'zip file should unzip and contain all of the expected files');
 
       // delete generated file
-      grunt.file.delete(zipFile);
+      //grunt.file.delete(zipFile);
 
       test.done();
     });

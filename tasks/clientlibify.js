@@ -43,7 +43,7 @@ module.exports = function (grunt) {
         name: 'clientlibify',
         version: '1.0',
         group: 'my_packages',
-        description: 'CRX package installed from grunt-clientlibify plugin'
+        description: 'CRX package installed using grunt-clientlibify plugin'
       },
       deploy: {
         scheme: 'http',
@@ -159,15 +159,17 @@ module.exports = function (grunt) {
     function generateClientLibrarySection(name, pathToSrcDirectory, fileExtensions) {
       grunt.file.mkdir(path.join(clientlibFolderLocation, name));
 
+      // get all files for this section
+      var files = grunt.file.expand({filter: 'isFile', cwd: pathToSrcDirectory, matchBase: true}, fileExtensions);
+
       // write .txt file
-      var files = grunt.file.expand({filter: 'isFile', cwd: pathToSrcDirectory}, fileExtensions);
       grunt.file.write(path.join(clientlibFolderLocation, name + '.txt'),
                       "#base=".concat(name).concat('\n')
                       .concat(files.join('\n')));
 
       // copy files over to client library
-      grunt.file.recurse(pathToSrcDirectory, function (abspath, rootdir, subdir, filename) {
-        grunt.file.copy(abspath, path.join(clientlibFolderLocation, name, filename));
+      files.forEach(function(file) {
+        grunt.file.copy(path.join(pathToSrcDirectory, file), path.join(clientlibFolderLocation, name, file));
       });
     }
 
