@@ -6,19 +6,18 @@
  * Licensed under the MIT license.
  */
 
-// TODO: test sub directories for css/js works
-// TODO: use system temp directory?
 // TODO: work on supporting other folders outside css and js
 // TODO: refactor to externalise util functions into separate file in lib/
 
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var chalk = require('chalk');
+var fs       = require('fs');
+var path     = require('path');
+var chalk    = require('chalk');
 var archiver = require('archiver');
-var request = require('request');
-var uri = require('urijs');
+var request  = require('request');
+var uri      = require('urijs');
+var tmp      = require('tmp');
 
 module.exports = function (grunt) {
 
@@ -43,7 +42,7 @@ module.exports = function (grunt) {
         name: 'clientlibify',
         version: '1.0',
         group: 'my_packages',
-        description: 'CRX package installed using grunt-clientlibify plugin'
+        description: 'CRX package installed using the grunt-clientlibify plugin'
       },
       deploy: {
         scheme: 'http',
@@ -65,8 +64,11 @@ module.exports = function (grunt) {
       return false;
     }
 
-    var jcrRootPath = path.join(options.dest, '/jcr_root');
-    var metaInfPath = path.join(options.dest, '/META-INF');
+    // create a system tmp directory to store our task files
+    var tmpWorkingDir = tmp.dirSync({prefix: 'grunt_clientlibify_', unsafeCleanup: true}).name;
+
+    var jcrRootPath = path.join(tmpWorkingDir, '/jcr_root');
+    var metaInfPath = path.join(tmpWorkingDir, '/META-INF');
 
     var clientlibRootDir        = path.join(jcrRootPath, '/etc/designs/', options.category);
     var clientlibFolderLocation = path.join(clientlibRootDir, '/clientlibs');
@@ -122,9 +124,8 @@ module.exports = function (grunt) {
     var done = this.async();
 
     zipDirectory(directoriesToZip, zipFileLocation, function() {
-      // clean up after ourselves
-      cleanup();
-
+      // only install the CRX package if the `installPackage` option
+      // was set to `true`
       if(options.installPackage) {
         installPackage(zipFileLocation, function(err, httpResponse, body) {
           if(typeof httpResponse == 'undefined') {
@@ -244,14 +245,6 @@ module.exports = function (grunt) {
       }
 
       return false;
-    }
-
-    /**
-     * Performs any cleanup task after the task is run.
-     */
-    function cleanup() {
-      grunt.file.delete(jcrRootPath);
-      grunt.file.delete(metaInfPath);
     }
 
     /**
