@@ -32,23 +32,22 @@ module.exports = function (grunt) {
     var options = this.options({
       dest: 'tmp',
       installPackage: false,
-      category: 'etc-clientlibify',
+      categories: ['etc-clientlibify'],
       embed: [],
       dependencies: [],
-      package: {
-        name: 'clientlibify',
-        version: '1.0',
-        group: 'my_packages',
-        description: 'CRX package installed using the grunt-clientlibify plugin'
-      },
-      deploy: {
-        scheme: 'http',
-        host: 'localhost',
-        port: '4502',
-        username: 'admin',
-        password: 'admin'
-      }
+      packageName: 'clientlibify',
+      packageVersion: '1.0',
+      packageGroup: 'my_packages',
+      packageDescription: 'CRX package installed using the grunt-clientlibify plugin',
+      deployScheme: 'http',
+      deployHost: 'localhost',
+      deployPort: '4502',
+      deployUsername: 'admin',
+      deployPassword: 'admin'
     });
+
+    // set the main category as the first categories entry
+    options.category = options.categories[0];
 
     // validate mandatory config
     if(!options.cssDir && !options.jsDir) {
@@ -121,7 +120,7 @@ module.exports = function (grunt) {
       {src: jcrRootPath, dest: '/jcr_root'},
       {src: metaInfPath, dest: '/META-INF'}
     ];
-    var zipFileLocation = path.join(options.dest, options.package.name + '-' + options.package.version + '.zip');
+    var zipFileLocation = path.join(options.dest, options.packageName + '-' + options.packageVersion + '.zip');
 
     var done = this.async();
 
@@ -264,9 +263,9 @@ module.exports = function (grunt) {
       };
 
       var postUri = uri()
-        .scheme(options.deploy.scheme)
-        .host(options.deploy.host)
-        .port(options.deploy.port)
+        .scheme(options.deployScheme)
+        .host(options.deployHost)
+        .port(options.deployPort)
         .path('/crx/packmgr/service.jsp');
 
       grunt.verbose.writeln('Installing CRX package to ' + postUri.toString());
@@ -276,8 +275,8 @@ module.exports = function (grunt) {
           formData: formData,
           headers: {
             'Authorization': 'Basic ' +
-                new Buffer(options.deploy.username + ':' +
-                  options.deploy.password).toString('base64')
+                new Buffer(options.deployUsername + ':' +
+                           options.deployPassword).toString('base64')
           }
         }, callback);
     }

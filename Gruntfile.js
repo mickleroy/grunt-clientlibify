@@ -42,60 +42,41 @@ module.exports = function(grunt) {
         options: {
           cssDir: 'test/fixtures/css',
           jsDir: 'test/fixtures/js',
-          category: 'styleguide',
+          categories: ['styleguide'],
           embed: [],
-          dependencies: [],
-          package: {
-            name: 'aem-styleguide',
-            version: '2.1',
-            group: 'My Company',
-            description: 'This package contains our mighty styleguide!'
-          }
+          dependencies: ['cq-jquery'],
+          packageName: 'aem-styleguide',
+          packageVersion: '2.1',
+          packageGroup: 'My Company',
+          packageDescription: 'This package contains our mighty styleguide!'
         }
       },
       // Generate a CSS only clientlib
       css_only_options: {
         options: {
           cssDir: 'test/fixtures/css',
-          package: {
-            name: 'css-styleguide',
-            version: '1.0',
-            group: 'my_packages',
-            description: ''
-          }
+          packageName: 'css-styleguide'
         }
       },
       // Generate a JS only clientlib
       js_only_options: {
         options: {
           jsDir: 'test/fixtures/js',
-          package: {
-            name: 'js-styleguide',
-            version: '1.0',
-            group: 'my_packages',
-            description: ''
-          }
+          packageName: 'js-styleguide'
         }
       },
-      // Deploys the CRX package to an local AEM instance
+      // Deploys the CRX package to a local AEM instance
       deploy_options: {
         options: {
           cssDir: 'test/fixtures/css',
           jsDir: 'test/fixtures/js',
           installPackage: true,
-          package: {
-            name: 'deploy-clientlibify',
-            version: '1.0',
-            group: 'my_packages',
-            description: 'CRX package installed from grunt-clientlibify plugin'
-          },
-          deploy: {
-            scheme: 'http',
-            host: 'localhost',
-            port: '4502',
-            username: 'admin',
-            password: 'admin'
-          }
+          packageName: 'deploy-clientlibify',
+          deployScheme: 'http',
+          deployHost: 'localhost',
+          deployPort: '4502',
+          deployUsername: 'admin',
+          deployPassword: 'admin'
         }
       }
     },
