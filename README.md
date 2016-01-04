@@ -189,7 +189,7 @@ grunt.initConfig({
       cssDir: 'assets/styles/css',
       jsDir: 'assets/scripts',
       installPackage: true,
-      categories: 'awesome-styleguide',
+      categories: ['awesome-styleguide'],
       embed: [],
       dependencies: ['cq-jquery'],
 
