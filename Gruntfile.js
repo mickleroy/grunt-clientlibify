@@ -80,6 +80,8 @@ module.exports = function(grunt) {
       // Deploys the CRX package to an local AEM instance
       deploy_options: {
         options: {
+          cssDir: 'test/fixtures/css',
+          jsDir: 'test/fixtures/js',
           installPackage: true,
           package: {
             name: 'deploy-clientlibify',
@@ -115,7 +117,15 @@ module.exports = function(grunt) {
 
   // Whenever the "test" task is run, first clean the "tmp" dir, then run this
   // plugin's task(s), then test the result.
-  grunt.registerTask('test', ['clean', 'clientlibify', 'nodeunit']);
+  // Note: the "deploy_options" target is not run when testing (only manual testing)
+  grunt.registerTask('test', [
+    'clean',
+    'clientlibify:default_options',
+    'clientlibify:custom_package_options',
+    'clientlibify:css_only_options',
+    'clientlibify:js_only_options',
+    'nodeunit'
+  ]);
 
   // By default, lint and run all tests.
   grunt.registerTask('default', ['jshint', 'test']);
