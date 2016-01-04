@@ -10,7 +10,6 @@
 
 var fs       = require('fs');
 var path     = require('path');
-var chalk    = require('chalk');
 var archiver = require('archiver');
 var request  = require('request');
 var uri      = require('urijs');
@@ -207,7 +206,7 @@ module.exports = function (grunt) {
 
       destStream.on('close', function() {
         var size = archive.pointer();
-        grunt.log.ok('Created ' + chalk.cyan(dest) + ' (' + size + ' bytes)');
+        grunt.log.ok('Created ' + dest + ' (' + size + ' bytes)');
 
         callback();
       });
