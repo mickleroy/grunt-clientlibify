@@ -2,6 +2,15 @@
 
 > Integrate AEM with a styleguide
 
+## Motivation
+There is a push in the industry to code against an external style guide to maintain consistent styling and have a reusable
+set of components to build applications with. In my experience working with AEM/CQ, integrating
+a style guide into a project has consistently been a challenge. Each project generally ends up with a set of custom
+scripts to achieve this integration (heavily scripted Grunt files, Groovy scripts, Git sub-trees, etc).
+
+This plugin aims to take the guess work out of integrating AEM with an external style guide
+by leveraging javascript tooling to build (and optionally deploy) a CRX package containing those front-end assets.
+
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
 
