@@ -15,15 +15,19 @@ var request  = require('request');
 var uri      = require('urijs');
 var tmp      = require('tmp');
 
+// grab the location from where the script is running from
+// i.e. ~/projects/myproj/node_modules/grunt-clientlibify/tasks/
+var taskDir  = __dirname;
+
 module.exports = function (grunt) {
 
   var templates = {
-    designContent:    'tasks/templates/designContent.xml',
-    clientlibContent: 'tasks/templates/clientlibContent.xml',
-    filterXml:        'tasks/templates/filter.xml',
-    folderContent:    'tasks/templates/folderContent.xml',
-    jcrRootContent:   'tasks/templates/jcrRootContent.xml',
-    propertiesXml:    'tasks/templates/properties.xml'
+    designContent:    taskDir + '/templates/designContent.xml',
+    clientlibContent: taskDir + '/templates/clientlibContent.xml',
+    filterXml:        taskDir + '/templates/filter.xml',
+    folderContent:    taskDir + '/templates/folderContent.xml',
+    jcrRootContent:   taskDir + '/templates/jcrRootContent.xml',
+    propertiesXml:    taskDir + '/templates/properties.xml'
   }
 
   grunt.registerMultiTask('clientlibify', 'Integrate AEM with a styleguide', function () {
