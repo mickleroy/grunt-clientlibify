@@ -1,7 +1,7 @@
 {
   "name": "grunt-clientlibify",
   "description": "Integrate AEM with a styleguide",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "homepage": "https://github.com/mickleroy/grunt-clientlibify",
   "author": {
     "name": "Michael Leroy",
