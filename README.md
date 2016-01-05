@@ -199,7 +199,7 @@ grunt.initConfig({
       packageName: 'prickly-pear',
       packageVersion: '2.1',
       packageGroup: 'My Company',
-      packageDescription: 'CRX package installed using the grunt-clientlibify plugin'
+      packageDescription: 'CRX package installed using the grunt-clientlibify plugin',
 
       // deploy options
       deployScheme: 'http',
