@@ -223,9 +223,6 @@ grunt.initConfig({
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
-## Roadmap
-- Supporting other files/folders outside of css and js. This would mean providing the ability
-for users to specify additional resources to be placed in the client library (i.e. icons, fonts, images).
-
 ## Release History
-_(Nothing yet)_
+* 2016-02-01  (0.4.0) Added support for additional assets (images, fonts, etc) to be included in the CRX package via `options.assetsDirs`.
+* 2016-01-05  (0.3.0) Initial stable release.

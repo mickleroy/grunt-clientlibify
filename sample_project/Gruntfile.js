@@ -8,6 +8,7 @@ module.exports = function(grunt) {
         dest: 'dist',
         cssDir: 'assets/styles',
         jsDir: 'assets/scripts',
+        assetsDirs: ['assets/images'],
 
         // set `installPackage` to `true` to deploy to an AEM instance
         installPackage: false,
