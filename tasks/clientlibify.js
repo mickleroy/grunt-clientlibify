@@ -34,6 +34,7 @@ module.exports = function (grunt) {
 
     var options = this.options({
       dest: 'tmp',
+      assetsDirs: [],
       installPackage: false,
       categories: ['etc-clientlibify'],
       embed: [],
@@ -99,12 +100,38 @@ module.exports = function (grunt) {
 
     // create css directory
     if (options.cssDir) {
+      grunt.log.subhead('Processing CSS directory');
       generateClientLibrarySection('css', options.cssDir, ['*.css', '*.less']);
     }
 
     // create js directory
     if (options.jsDir) {
+      grunt.log.subhead('Processing Javascript directory');
       generateClientLibrarySection('js', options.jsDir, ['*.js']);
+    }
+
+    // transfer other assets (images, fonts, etc)
+    if(options.assetsDirs.length) {
+      grunt.log.subhead('Processing Assets directories');
+
+      options.assetsDirs.forEach(function (assetsSrc) {
+        var assetsDest = path.basename(assetsSrc);
+        grunt.log.writeln('Processing assets in: ' + assetsSrc);
+
+        // check provided asset directory
+        if (!grunt.file.isDir(assetsSrc)) {
+          grunt.log.warn(assetsSrc + ' is not a directory, skipping...');
+          return;
+        }
+
+        var files = grunt.file.expand({filter: 'isFile', cwd: assetsSrc, matchBase: true}, '*');
+
+        // copy files over to client library
+        files.forEach(function (file) {
+          grunt.verbose.writeln(file);
+          grunt.file.copy(path.join(assetsSrc, file), path.join(clientlibFolderLocation, assetsDest, file));
+        });
+      });
     }
 
     // create META-INF folder
@@ -127,10 +154,12 @@ module.exports = function (grunt) {
 
     var done = this.async();
 
+    grunt.log.subhead('Creating CRX package');
     zipDirectory(directoriesToZip, zipFileLocation, function() {
       // only install the CRX package if the `installPackage` option
       // was set to `true`
       if(options.installPackage) {
+        grunt.log.subhead('Installing CRX package');
         installPackage(zipFileLocation, function(err, httpResponse, body) {
           if(typeof httpResponse == 'undefined') {
             grunt.log.error('Upload failed');
@@ -163,17 +192,21 @@ module.exports = function (grunt) {
      * @param fileExtensions
      */
     function generateClientLibrarySection(name, pathToSrcDirectory, fileExtensions) {
+      grunt.log.writeln('Processing files in: ' + pathToSrcDirectory);
+
       grunt.file.mkdir(path.join(clientlibFolderLocation, name));
 
       // get all files for this section
       var files = grunt.file.expand({filter: 'isFile', cwd: pathToSrcDirectory, matchBase: true}, fileExtensions);
 
       // write .txt file
+      grunt.verbose.writeln('Creating ' + name + '.txt file');
       grunt.file.write(path.join(clientlibFolderLocation, name + '.txt'),
                       "#base=".concat(name).concat('\n')
                       .concat(files.join('\n')));
 
       // copy files over to client library
+      grunt.verbose.writeln('Copying files...');
       files.forEach(function(file) {
         grunt.file.copy(path.join(pathToSrcDirectory, file), path.join(clientlibFolderLocation, name, file));
       });
@@ -271,7 +304,7 @@ module.exports = function (grunt) {
         .port(options.deployPort)
         .path('/crx/packmgr/service.jsp');
 
-      grunt.verbose.writeln('Installing CRX package to ' + postUri.toString());
+      grunt.log.writeln('Installing CRX package to ' + postUri.toString());
 
       request.post({
           url: postUri.toString(),

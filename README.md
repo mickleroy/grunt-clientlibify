@@ -62,6 +62,14 @@ Type: `String`
 A string value that is used to indicate where the `.js` files should be fetched from.
 This would likely be the path to your `js` directory. For example, `dist/js`.
 
+#### options.assetsDirs
+Type: `Array`
+
+An optional Array of paths to additional style guide assets that should be included in the CRX package.
+This would likely be a set of paths to images, fonts, etc. For example, `dist/img`.
+All directories specified will be copied over at the same level as the CSS and JS directories.
+> This option only supports directories. Files will be ignored.
+
 #### options.dest
 Type: `String`
 Default value: `tmp`

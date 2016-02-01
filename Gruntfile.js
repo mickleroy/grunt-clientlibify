@@ -78,7 +78,16 @@ module.exports = function(grunt) {
           deployUsername: 'admin',
           deployPassword: 'admin'
         }
-      }
+      },
+      // Extra assets options
+      extra_assets_options: {
+        options: {
+          cssDir: 'test/fixtures/css',
+          jsDir: 'test/fixtures/js',
+          assetsDirs: ['test/fixtures/favico.ico', 'test/fixtures/img'],
+          packageName: 'extra-assets'
+        }
+      },
     },
 
     // Unit tests.
@@ -105,6 +114,7 @@ module.exports = function(grunt) {
     'clientlibify:custom_package_options',
     'clientlibify:css_only_options',
     'clientlibify:js_only_options',
+    'clientlibify:extra_assets_options',
     'nodeunit'
   ]);
 
