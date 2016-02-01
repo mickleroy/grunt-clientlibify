@@ -198,6 +198,7 @@ grunt.initConfig({
       dest: 'dist',
       cssDir: 'assets/styles/css',
       jsDir: 'assets/scripts',
+      assetsDirs: ['assets/images', 'assets/fonts'],
       installPackage: true,
       categories: ['awesome-styleguide'],
       embed: [],
