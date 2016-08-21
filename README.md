@@ -1,5 +1,7 @@
 # grunt-clientlibify
 
+[![Build Status](https://travis-ci.org/mickleroy/grunt-clientlibify.svg?branch=master)](https://travis-ci.org/mickleroy/grunt-clientlibify)
+
 > Integrate AEM with a styleguide
 
 ## Motivation
