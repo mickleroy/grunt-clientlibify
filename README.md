@@ -219,6 +219,8 @@ grunt.initConfig({
       categories: ['awesome-styleguide'],
       embed: [],
       dependencies: ['cq-jquery'],
+      jsProcessor: ['min:gcc'],
+      cssProcessor: ['min:none'],
 
       // package options
       packageName: 'prickly-pear',
@@ -239,7 +241,3 @@ grunt.initConfig({
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
-
-## Release History
-* 2016-02-01  (0.4.0) Added support for additional assets (images, fonts, etc) to be included in the CRX package via `options.assetsDirs`.
-* 2016-01-05  (0.3.0) Initial stable release.
