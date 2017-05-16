@@ -1,3 +1,6 @@
+### 0.5.1
+* Updating versions of dependencies
+
 ### 0.5.0
 * Introduced `jsProcessor` and `cssProcessor` options (requires AEM 6.2 or above)
 
