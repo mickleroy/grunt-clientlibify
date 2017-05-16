@@ -105,6 +105,20 @@ Default value: `[]`
 
 An array of string values that will be used as the clientlib dependencies.
 
+#### options.jsProcessor
+Type: `Array`
+Default value: `[]`
+
+An array of string values that will be used as the clientlib js processors (i.e. "min:gcc")
+> Requires AEM 6.2 or above
+
+#### options.cssProcessor
+Type: `Array`
+Default value: `[]`
+
+An array of string values that will be used as the clientlib css processors (i.e. "min:none")
+> Requires AEM 6.2 or above
+
 ### CRX Package Options
 
 #### options.packageName
