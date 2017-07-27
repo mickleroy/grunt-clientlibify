@@ -41,6 +41,7 @@ module.exports = function (grunt) {
             dependencies: [],
             jsProcessor: [],
             cssProcessor: [],
+            allowProxy: false,
             packageName: 'clientlibify',
             packageVersion: '1.0',
             packageGroup: 'my_packages',

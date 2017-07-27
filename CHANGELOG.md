@@ -1,3 +1,6 @@
+### 0.5.2
+* Introduced `allowProxy` option (requires AEM 6.3 or above)
+
 ### 0.5.1
 * Updating versions of dependencies
 

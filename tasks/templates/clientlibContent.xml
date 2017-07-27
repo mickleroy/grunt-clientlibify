@@ -5,4 +5,5 @@
         embed="[<%= embed.join(',') %>]"
         dependencies="[<%= dependencies.join(',') %>]"
         jsProcessor="[<%= jsProcessor.join(',') %>]"
-        cssProcessor="[<%= cssProcessor.join(',') %>]"/>
+        cssProcessor="[<%= cssProcessor.join(',') %>]"
+        allowProxy="{Boolean}<%= allowProxy %>"/>

@@ -98,6 +98,16 @@ module.exports = function (grunt) {
                     cssProcessor: ['default:none'],
                     packageName: 'processors'
                 }
+            },
+            // Allow proxy option
+            allowproxy_options: {
+                options: {
+                    cssDir: 'test/fixtures/css',
+                    jsDir: 'test/fixtures/js',
+                    categories: ['styleguide'],
+                    allowProxy: true,
+                    packageName: 'allowproxy'
+                }
             }
         },
 
@@ -127,6 +137,7 @@ module.exports = function (grunt) {
         'clientlibify:js_only_options',
         'clientlibify:extra_assets_options',
         'clientlibify:processor_options',
+        'clientlibify:allowproxy_options',
         'nodeunit'
     ]);
 
